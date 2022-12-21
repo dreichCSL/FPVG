@@ -5,7 +5,7 @@ import numpy as np
 import argparse
 
 
-def load_file(infile, framework=''):
+def load_file(infile, framework='regular'):
     # check if input parameters are file paths (pickle/json) or contents and return accordingly
     if os.path.isfile(infile):
         try:
@@ -379,7 +379,7 @@ if __name__ == '__main__':
                         choices=['balanced_val', 'gqa101k_id', 'gqa101k_ood'])
 
     # related to input file format and processing
-    parser.add_argument('--framework', type=str, default='', help='VQA framework / model source of test results file '
+    parser.add_argument('--framework', type=str, default='regular', help='VQA framework / model source of test results file '
                                                                   'for handling different result input formattings')
 
     # influences which qids are evaluated for FPVG
