@@ -22,8 +22,9 @@ Also note that for simplicity, we always evaluate the same set of test questions
 The model's output file storing the test results should contain at least the questionId and the model's answer prediction. Default format for input to calculate_FPVG.py is a json or pickle file with contents structured as a list as follows:
 ```
 [
-  {'questionId': 'q_id_##',
-   'prediction': 'house'
+  {
+    'questionId': 'q_id_##',
+    'prediction': 'house'
   },
   ...
 ]
