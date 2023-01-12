@@ -16,14 +16,9 @@ def load_file(infile, framework='regular'):
         f = infile
 
     if framework == 'visfis':
-        if features == 'bottomup':
-            # original visFIS release uses bottomup features (same as LXMERT)
-            # also: class label2ans is different here for reduced data in GQA-101k
-            ans_dicts = pickle.load(open('/share/data/VQA/visfis/gqacp/processed/trainval_label2ans.pkl', 'rb'))
-        else:
-            # full balanced train data used, class label2ans are different than GQA-101k
-            ans_dicts = pickle.load(
-                open('/share/data/VQA/negative_analysis_of_grounding/data/processed/trainval_label2ans.pkl', 'rb'))
+        # TODO: replace hard-coded path
+        ans_dicts = pickle.load(
+            open('/share/data/VQA/negative_analysis_of_grounding/data/processed/trainval_label2ans.pkl', 'rb'))
         output = []
         for idx, qid in enumerate(f['qid']):
             # contents in file needs to be mapped from class label to actual answer
@@ -108,13 +103,14 @@ def calculate_FPVG(test_all_input, test_rel_input, test_irrel_input, qa_input=''
     test_irrel = load_file(test_irrel_input, framework=framework)
 
     # load qa if not given
+    # TODO: replace hard-coded path
     if qa_input == '':
         if test_case == 'balanced_val':
-            qa = json.load(open('/home/dreich/Data/GQA/questions/val_balanced_questions.json'))
+            qa = json.load(open('/share/data/VQA/GQA/questions/val_balanced_questions.json'))
         elif test_case == 'gqa101k_id':  # special mix of GQA balanced val/train questions
-            qa = json.load(open('/home/dreich/Data/GQA/questions/gqa101k_id_questions.json'))
+            qa = json.load(open('/home/{}/Data/GQA/questions/gqa101k_id_questions.json'.format(USERNAME)))
         elif test_case == 'gqa101k_ood':  # special mix of GQA balanced val/train questions
-            qa = json.load(open('/home/dreich/Data/GQA/questions/gqa101k_ood_questions.json'))
+            qa = json.load(open('/home/{}/Data/GQA/questions/gqa101k_ood_questions.json'.format(USERNAME)))
     else:
         # if given as path
         if os.path.isfile(qa_input):
@@ -135,30 +131,31 @@ def calculate_FPVG(test_all_input, test_rel_input, test_irrel_input, qa_input=''
         print("ACC. only relevant objects: {:.2f} {}".format(np.average(list(test_rel_result_dict.values()))*100, len(test_rel_result_dict)))
         print("ACC. only irrelevant objects: {:.2f} {}".format(np.average(list(test_irrel_result_dict.values()))*100, len(test_irrel_result_dict)))
 
+    # TODO: replace hard-coded path
     if features == 'vinvl':
-        filter_objects_rel = pickle.load(open('/share/documents/dreich/Data/VG_experiments/GQA_vinvl_val_relevant_objects_path_iou_50pct.pkl','rb'))
-        filter_objects_irrel = pickle.load(open('/share/documents/dreich/Data/VG_experiments/GQA_vinvl_val_irrelevant_objects_path_neg_overlap_25pct_2.pkl','rb'))
+        filter_objects_rel = pickle.load(open('/share/documents/{}/Data/VG_experiments/GQA_vinvl_val_relevant_objects_path_iou_50pct.pkl'.format(USERNAME),'rb'))
+        filter_objects_irrel = pickle.load(open('/share/documents/{}/Data/VG_experiments/GQA_vinvl_val_irrelevant_objects_path_neg_overlap_25pct_2.pkl'.format(USERNAME),'rb'))
     elif features in ['gqa', 'swapmix']:
-        filter_objects_rel = pickle.load(open('/share/documents/dreich/Data/VG_experiments/GQA_gqa_val_relevant_objects_path_iou_50pct.pkl','rb'))
-        filter_objects_irrel = pickle.load(open('/share/documents/dreich/Data/VG_experiments/GQA_gqa_val_irrelevant_objects_path_neg_overlap_25pct_2.pkl','rb'))
+        filter_objects_rel = pickle.load(open('/share/documents/{}/Data/VG_experiments/GQA_gqa_val_relevant_objects_path_iou_50pct.pkl'.format(USERNAME),'rb'))
+        filter_objects_irrel = pickle.load(open('/share/documents/{}/Data/VG_experiments/GQA_gqa_val_irrelevant_objects_path_neg_overlap_25pct_2.pkl'.format(USERNAME),'rb'))
     elif features == 'bottomup':
-        filter_objects_rel = pickle.load(open('/share/documents/dreich/Data/VG_experiments/GQA_bottomup_val_relevant_objects_path_iou_50pct.pkl','rb'))
-        filter_objects_irrel = pickle.load(open('/share/documents/dreich/Data/VG_experiments/GQA_bottomup_val_irrelevant_objects_path_neg_overlap_25pct_2.pkl','rb'))
+        filter_objects_rel = pickle.load(open('/share/documents/{}/Data/VG_experiments/GQA_bottomup_val_relevant_objects_path_iou_50pct.pkl'.format(USERNAME),'rb'))
+        filter_objects_irrel = pickle.load(open('/share/documents/{}/Data/VG_experiments/GQA_bottomup_val_irrelevant_objects_path_neg_overlap_25pct_2.pkl'.format(USERNAME),'rb'))
         if test_case in ['gqa101k_id', 'gqa101k_ood']:
             # visfis GQA-101k tests (id/ood) contain questions from both train and val set, so need to load those as well for evaluation
             filter_objects_rel.update(pickle.load(open(
-                '/share/documents/dreich/Data/VG_experiments/GQA_bottomup_train_relevant_objects_path_iou_50pct.pkl',
+                '/share/documents/{}/Data/VG_experiments/GQA_bottomup_train_relevant_objects_path_iou_50pct.pkl'.format(USERNAME),
                 'rb')))
             filter_objects_irrel.update(pickle.load(open(
-                '/share/documents/dreich/Data/VG_experiments/GQA_bottomup_train_irrelevant_objects_path_neg_overlap_25pct.pkl',
+                '/share/documents/{}/Data/VG_experiments/GQA_bottomup_train_irrelevant_objects_path_neg_overlap_25pct.pkl'.format(USERNAME),
                 'rb')))
     elif features == 'detectron':
-        filter_objects_rel = pickle.load(open('/share/documents/dreich/Data/VG_experiments/GQA_detectron_val_relevant_objects_path_iou_50pct.pkl','rb'))
-        filter_objects_irrel = pickle.load(open('/share/documents/dreich/Data/VG_experiments/GQA_detectron_val_irrelevant_objects_path_neg_overlap_25pct_2.pkl','rb'))
+        filter_objects_rel = pickle.load(open('/share/documents/{}/Data/VG_experiments/GQA_detectron_val_relevant_objects_path_iou_50pct.pkl'.format(USERNAME),'rb'))
+        filter_objects_irrel = pickle.load(open('/share/documents/{}/Data/VG_experiments/GQA_detectron_val_irrelevant_objects_path_neg_overlap_25pct_2.pkl'.format(USERNAME),'rb'))
         if test_case in ['gqa101k_id', 'gqa101k_ood']:
             # visfis GQA-101k tests (id/ood) contain questions from both train and val set, so need to load those as well for evaluation
-            filter_objects_rel.update(pickle.load(open('/share/documents/dreich/Data/VG_experiments/GQA_detectron_train_relevant_objects_path_iou_50pct_2.pkl','rb')))
-            filter_objects_irrel.update(pickle.load(open('/share/documents/dreich/Data/VG_experiments/GQA_detectron_train_irrelevant_objects_path_neg_overlap_25pct_2.pkl','rb')))
+            filter_objects_rel.update(pickle.load(open('/share/documents/{}/Data/VG_experiments/GQA_detectron_train_relevant_objects_path_iou_50pct_2.pkl'.format(USERNAME),'rb')))
+            filter_objects_irrel.update(pickle.load(open('/share/documents/{}/Data/VG_experiments/GQA_detectron_train_irrelevant_objects_path_neg_overlap_25pct_2.pkl'.format(USERNAME),'rb')))
 
     # remove questions from FPVG eval based on available rel/irrel anno matches in object detector-provided features
     for qid in list(qa):

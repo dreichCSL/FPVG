@@ -11,8 +11,6 @@ import h5py
 
 
 
-
-
 def get_iou(bb1, bb2):
     """
     Calculate the Intersection over Union (IoU) of two bounding boxes.
@@ -137,13 +135,14 @@ def get_relevant_object_indices_h5_mod(sg, qa, threshold=0.5, matching_method='i
     # now find overlap with detectron output objects
     img_id_list = list(relevant_objects_per_img_and_question.keys())
 
-    # loading h5 & info_json for box location info
+    # loading tsv/h5 & info_json for box location info
     if feature_source == "bottomup":
         import csv, sys, base64
         csv.field_size_limit(sys.maxsize)
         FIELDNAMES = ["img_id", "img_h", "img_w", "objects_id", "objects_conf",
                   "attrs_id", "attrs_conf", "num_boxes", "boxes", "features"]
-        img_rep_gqa_feats = open("/home/dreich/Data/VG_lxmert/vg_gqa_imgfeat/vg_gqa_obj36.tsv", 'r')
+        # TODO: replace hard-coded path
+        img_rep_gqa_feats = open("/home/{}/Data/VG_lxmert/vg_gqa_imgfeat/vg_gqa_obj36.tsv".format(USERNAME), 'r')
 
         tmp_dict_img_data = {}
         reader = csv.DictReader(img_rep_gqa_feats, FIELDNAMES, delimiter="\t")
@@ -158,17 +157,18 @@ def get_relevant_object_indices_h5_mod(sg, qa, threshold=0.5, matching_method='i
                 item['boxes'] = item['boxes'].reshape((num_boxes, 4))
                 tmp_dict_img_data[item['img_id']] = item['boxes']
 
+    # TODO: replace hard-coded path
     elif feature_source == "detectron":
-        img_rep_gqa_json = json.load(open('/home/dreich/Data/GQA_mac/output_gqa_detectron_objects_info.json', 'r'))
-        img_rep_gqa_feats = h5py.File('/home/dreich/Data/GQA_mac/output_gqa_detectron_objects.h5', 'r')
+        img_rep_gqa_json = json.load(open('/home/{}/Data/GQA_mac/output_gqa_detectron_objects_info.json'.format(USERNAME), 'r'))
+        img_rep_gqa_feats = h5py.File('/home/{}/Data/GQA_mac/output_gqa_detectron_objects.h5'.format(USERNAME), 'r')
 
     elif feature_source == "gqa":
-        img_rep_gqa_json = json.load(open('/home/dreich/Data/GQA/objects/gqa_objects_info.json', 'r'))
-        img_rep_gqa_feats = [h5py.File("/home/dreich/Data/GQA/objects/gqa_objects_{}.h5".format(h5_file_idx), 'r') for h5_file_idx in range(16)]
+        img_rep_gqa_json = json.load(open('/home/{}/Data/GQA/objects/gqa_objects_info.json'.format(USERNAME), 'r'))
+        img_rep_gqa_feats = [h5py.File("/home/{}/Data/GQA/objects/gqa_objects_{}.h5".format(USERNAME, h5_file_idx), 'r') for h5_file_idx in range(16)]
 
     elif feature_source == "vinvl":
-        img_rep_gqa_json = json.load(open('/home/dreich/Data/GQA_mac/output_gqa_vinvl_objects_features_info.json', 'r'))
-        img_rep_gqa_feats = h5py.File('/home/dreich/Data/GQA_mac/output_gqa_vinvl_objects_features.h5', 'r')
+        img_rep_gqa_json = json.load(open('/home/{}/Data/GQA_mac/output_gqa_vinvl_objects_features_info.json'.format(USERNAME), 'r'))
+        img_rep_gqa_feats = h5py.File('/home/{}/Data/GQA_mac/output_gqa_vinvl_objects_features.h5'.format(USERNAME), 'r')
 
     if len(img_id_list_given) != 0:
         new_relevant_objects_per_img_and_question = {}
@@ -275,8 +275,8 @@ if __name__ == '__main__':
     print("Loading qa and sg annotation files.")
     sg = json.load(open(args.sg_input))
     qa = json.load(open(args.qa_input))
-    # qa = json.load(open('/home/dreich/Data/GQA/questions/val_balanced_questions.json'))
-    # sg = json.load(open('/home/dreich/Data/GQA/sceneGraphs/val_sceneGraphs.json'))
+    # qa = json.load(open('/home/{}/Data/GQA/questions/val_balanced_questions.json'.format(USERNAME)))
+    # sg = json.load(open('/home/{}/Data/GQA/sceneGraphs/val_sceneGraphs.json'.format(USERNAME)))
     print("Done.")
 
     if len(args.img_ids):
