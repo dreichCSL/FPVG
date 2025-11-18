@@ -1,6 +1,6 @@
 # Faithful & Plausible Visual Grounding in VQA
 
-Scripts for calculating the FPVG metric, introduced in ["Measuring Faithful and Plausible Visual Grounding in VQA", Reich et al.](https://arxiv.org/abs/2305.15015).
+Scripts for calculating the FPVG metric, introduced in ["Measuring Faithful and Plausible Visual Grounding in VQA", Reich et al.](https://aclanthology.org/2023.findings-emnlp.206/).
 
 ## Prerequisites
 To calculate FPVG with the scripts provided here you'll need:
